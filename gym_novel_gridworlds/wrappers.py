@@ -1,6 +1,7 @@
 import pickle
 import os
 from datetime import datetime
+import random
 
 import gym
 from gym import error, spaces, utils
@@ -68,7 +69,7 @@ class LimitActions(gym.core.Wrapper):
         self.action_space = spaces.Discrete(len(self.limited_actions_id))
 
     def step(self, action_id):
-
+        
         assert action_id in self.limited_actions_id.values(), "Action ID " + str(action_id) + " is not valid, max" \
                                                               "action ID is " + str(len(self.limited_actions_id)-1)
         last_action = list(self.limited_actions_id.keys())[list(self.limited_actions_id.values()).index(action_id)]
@@ -79,3 +80,22 @@ class LimitActions(gym.core.Wrapper):
         obs, reward, done, info = self.env.step(action_id)
 
         return obs, reward, done, info
+
+class RandomizeInventory(gym.core.Wrapper):
+    """
+    Randomize the starting inventory of the environment
+    """
+    def __init__(self, env, string_range=(0,3), stick_range=(0,3)):
+        super().__init__(env)
+        self.env = env
+        self.string_range = string_range
+        self.stick_range = stick_range
+
+
+    def reset(self):
+        self.env.reset()
+
+        self.env.inventory_items_quantity['string'] = random.randint(self.string_range[0], self.string_range[1])
+        self.env.inventory_items_quantity['stick'] = random.randint(self.stick_range[0], self.stick_range[1])
+
+        return self.env.get_observation()

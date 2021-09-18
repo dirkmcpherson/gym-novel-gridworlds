@@ -13,6 +13,8 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 
+from IPython import embed
+
 
 class BowV1Env(gym.Env):
     # metadata = {'render.modes': ['human']}
@@ -76,8 +78,8 @@ class BowV1Env(gym.Env):
 
         # Reward
         self.last_reward = 0  # last received reward
-        self.reward_intermediate = 10
-        self.reward_done = 50
+        self.reward_intermediate = -1
+        self.reward_done = -1
 
         self.last_done = False  # last done
 
@@ -230,7 +232,7 @@ class BowV1Env(gym.Env):
         result = True
         step_cost = 0  # default step_cost
         message = ''
-
+        # embed()
         if action_id == self.actions_id['Forward']:
             if self.agent_facing_str == 'NORTH' and self.map[r - 1][c] == 0:
                 self.agent_location = (r - 1, c)
@@ -318,7 +320,7 @@ class BowV1Env(gym.Env):
 
         done = False
         if self.inventory_items_quantity[self.goal_item_to_craft] >= 1:
-            reward = self.reward_done
+            reward = 1000 #self.reward_done
             done = True
 
         info = {'result': result, 'step_cost': step_cost, 'message': message}
